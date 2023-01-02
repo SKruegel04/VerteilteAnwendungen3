@@ -42,7 +42,7 @@ class BasketResourceTest {
             .post("/basket")
             .then()
             .log().all()
-            .statusCode(501);
+            .statusCode(201);
     }
 
     @Test
