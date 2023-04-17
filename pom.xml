@@ -11,10 +11,10 @@
         <maven.compiler.release>11</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <quarkus.platform.version>2.12.1.Final</quarkus.platform.version>
+        <quarkus.platform.version>2.16.6.Final</quarkus.platform.version>
         <quarkus.package.type>uber-jar</quarkus.package.type>
         <skipITs>true</skipITs>
-        <surefire-plugin.version>3.0.0-M7</surefire-plugin.version>
+        <surefire-plugin.version>3.0.0</surefire-plugin.version>
     </properties>
     <dependencyManagement>
         <dependencies>
