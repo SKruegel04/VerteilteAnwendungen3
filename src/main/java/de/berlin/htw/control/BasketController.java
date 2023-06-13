@@ -7,7 +7,7 @@ import javax.ws.rs.NotSupportedException;
 
 import de.berlin.htw.boundary.dto.Basket;
 import io.quarkus.redis.datasource.RedisDataSource;
-import io.quarkus.redis.datasource.string.StringCommands;
+import io.quarkus.redis.datasource.value.ValueCommands;
 import io.quarkus.redis.datasource.list.ListCommands;
 
 /**
@@ -19,12 +19,12 @@ public class BasketController {
     @Inject
     protected RedisDataSource redisDS;
     
-    protected StringCommands<String, Integer> countCommands;
+    protected ValueCommands<String, Integer> countCommands;
     protected ListCommands<String, String> stringListCommands;
     
     @PostConstruct
     protected void init() {
-        countCommands = redisDS.string(Integer.class);
+        countCommands = redisDS.value(Integer.class);
         stringListCommands = redisDS.list(String.class);
     }
     

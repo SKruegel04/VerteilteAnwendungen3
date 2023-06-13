@@ -1,7 +1,7 @@
 package de.berlin.htw;
 
 import io.quarkus.redis.datasource.RedisDataSource;
-import io.quarkus.redis.datasource.string.StringCommands;
+import io.quarkus.redis.datasource.value.ValueCommands;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 
@@ -20,7 +20,7 @@ class BasketResourceTest {
     
     @Test
     void testGetBasket() {
-        StringCommands<String, Integer> countCommands = redisDS.string(Integer.class);
+        ValueCommands<String, Integer> countCommands = redisDS.value(Integer.class);
         
         given()
             .log().all()
