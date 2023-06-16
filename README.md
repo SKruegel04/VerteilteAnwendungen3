@@ -4,8 +4,8 @@ Mögliche Punktzahl: 20 Punkte
 
 ## Deadlines
 
-- 1. Zug: 22.6.2023
-- 2. Zug: 20.6.2023 
+- 1. Zug: 29.6.2023
+- 2. Zug: 27.6.2023 
 
 ## Aufgabestellung
 In dieser Aufgabe erhalten Sie eine vorkonfigurierte Backend-Application, die von einem Webshop als Warenkorb sowie zum Abschluss einer Bestellung genutzt werden soll.
