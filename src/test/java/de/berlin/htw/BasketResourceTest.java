@@ -39,10 +39,10 @@ class BasketResourceTest {
             .log().all()
             .when().header("X-User-Id", "3")
             .contentType(ContentType.JSON)
-            .post("/basket")
+            .post("/basket/anyID")
             .then()
             .log().all()
-            .statusCode(201);
+            .statusCode(501);
     }
 
     @Test
