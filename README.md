@@ -4,10 +4,10 @@ Mögliche Punktzahl: 20 Punkte
 
 ## Deadlines
 
-- 1. Zug: 29.6.2023
-- 2. Zug: 27.6.2023 
+- 1. Zug: 11.1.2024
+- 2. Zug: 9.1.2024 
 
-## Aufgabestellung
+## Aufgabenstellung
 In dieser Aufgabe erhalten Sie eine vorkonfigurierte Backend-Application, die von einem Webshop als Warenkorb sowie zum Abschluss einer Bestellung genutzt werden soll.
 Die REST-Schnittstelle wurde von dem Auftraggeber spezifiziert und bereits in den Klassen
 [BasketResource](src/main/java/de/berlin/htw/boundary/BasketResource.java) und
@@ -80,7 +80,7 @@ If you want to learn more about Quarkus, please visit its website: https://quark
 
 You can run your application in dev mode that enables live coding using:
 ```shell script
-$mvn compile quarkus:dev
+$ mvn compile quarkus:dev
 ```
 
 > **_NOTE:_**  Quarkus ships with a Dev UI, which is available in dev mode only at http://localhost:8080/q/dev/.
@@ -89,8 +89,8 @@ $mvn compile quarkus:dev
 
 The application can be packaged using:
 ```shell script
-$mvn package
+$ mvn package
 ```
 It produces the `verteilte-anwendungen-redis-1.0.0-SNAPSHOT-runner.jar` file in the `target/` directory.
 
-The application is now runnable using `$java -jar target/verteilte-anwendungen-redis-1.0.0-SNAPSHOT-runner.jar`.
+The application is now runnable using `$ java -jar target/verteilte-anwendungen-redis-1.0.0-SNAPSHOT-runner.jar`.
