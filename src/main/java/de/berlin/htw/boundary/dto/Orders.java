@@ -3,7 +3,7 @@ package de.berlin.htw.boundary.dto;
 import java.util.List;
 
 /**
- * @author Alexander Stanik [stanik@htw-berlin.de]
+ * @author Alexander Stanik [alexander.stanik@htw-berlin.de]
  */
 public class Orders {
 

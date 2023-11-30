@@ -1,7 +1,7 @@
 package de.berlin.htw.boundary.dto;
 
 /**
- * @author Alexander Stanik [stanik@htw-berlin.de]
+ * @author Alexander Stanik [alexander.stanik@htw-berlin.de]
  */
 public class Basket extends Order {
 

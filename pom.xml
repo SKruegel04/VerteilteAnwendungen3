@@ -7,14 +7,14 @@
     <packaging>jar</packaging>
     <name>Verteilte Anwendungen Übung 3</name>
     <properties>
-        <compiler-plugin.version>3.8.1</compiler-plugin.version>
+        <compiler-plugin.version>3.11.0</compiler-plugin.version>
         <maven.compiler.release>11</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <quarkus.platform.version>2.16.6.Final</quarkus.platform.version>
+        <surefire-plugin.version>3.1.2</surefire-plugin.version>
+        <quarkus.platform.version>3.5.3</quarkus.platform.version>
         <quarkus.package.type>uber-jar</quarkus.package.type>
         <skipITs>true</skipITs>
-        <surefire-plugin.version>3.0.0</surefire-plugin.version>
     </properties>
     <dependencyManagement>
         <dependencies>

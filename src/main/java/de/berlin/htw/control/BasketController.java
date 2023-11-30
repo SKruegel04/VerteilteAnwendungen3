@@ -1,9 +1,9 @@
 package de.berlin.htw.control;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
-import javax.ws.rs.NotSupportedException;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.Dependent;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.NotSupportedException;
 
 import de.berlin.htw.boundary.dto.Basket;
 import io.quarkus.redis.datasource.RedisDataSource;
@@ -11,7 +11,7 @@ import io.quarkus.redis.datasource.value.ValueCommands;
 import io.quarkus.redis.datasource.list.ListCommands;
 
 /**
- * @author Alexander Stanik [stanik@htw-berlin.de]
+ * @author Alexander Stanik [alexander.stanik@htw-berlin.de]
  */
 @Dependent
 public class BasketController {

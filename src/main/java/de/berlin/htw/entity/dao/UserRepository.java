@@ -1,14 +1,14 @@
 package de.berlin.htw.entity.dao;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.transaction.Transactional;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 
 import de.berlin.htw.entity.dto.UserEntity;
 
 /**
- * @author Alexander Stanik [stanik@htw-berlin.de]
+ * @author Alexander Stanik [alexander.stanik@htw-berlin.de]
  */
 @ApplicationScoped
 public class UserRepository {

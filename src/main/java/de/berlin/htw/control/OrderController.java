@@ -1,12 +1,12 @@
 package de.berlin.htw.control;
 
-import javax.enterprise.context.Dependent;
-import javax.ws.rs.NotSupportedException;
+import jakarta.enterprise.context.Dependent;
+import jakarta.ws.rs.NotSupportedException;
 
 import de.berlin.htw.boundary.dto.Orders;
 
 /**
- * @author Alexander Stanik [stanik@htw-berlin.de]
+ * @author Alexander Stanik [alexander.stanik@htw-berlin.de]
  */
 @Dependent
 public class OrderController {
