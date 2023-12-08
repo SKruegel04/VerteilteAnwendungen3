@@ -1,6 +1,8 @@
 package de.berlin.htw.boundary;
 
 import jakarta.inject.Inject;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -29,6 +31,9 @@ import de.berlin.htw.boundary.dto.Item;
 import de.berlin.htw.boundary.dto.Order;
 import de.berlin.htw.control.BasketController;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
 /**
  * @author Alexander Stanik [alexander.stanik@htw-berlin.de]
  */
@@ -46,6 +51,9 @@ public class BasketResource {
 
     @Inject
     Logger logger;
+
+    @Inject
+    Validator validator;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -101,8 +109,22 @@ public class BasketResource {
             @Parameter(description = "The item to add in the basket", required = true) final Item item) {
     	logger.info(context.getUserPrincipal().getName() 
     			+ " is calling " + uri.getAbsolutePath());
-    	// return basket with remaining balance
-        return Response.status(Status.NOT_IMPLEMENTED).build();
+
+        Set<ConstraintViolation<Item>> violations = validator.validate(item);
+        if (!violations.isEmpty()) {
+            logger.error("Validierungsfehler: " + violations.toString());
+            return Response
+                .status(Response.Status.BAD_REQUEST)
+                .entity(violations.stream()
+                    .map(v -> v.getPropertyPath() + " " + v.getMessage())
+                    .collect(Collectors.toList()))
+                .build();
+        }
+
+        return Response
+            .created(uri.getBaseUriBuilder().path("/basket").build())
+            .entity("Item hinzugefügt")
+            .build();
     }
 
     @DELETE
@@ -139,5 +161,7 @@ public class BasketResource {
     	// return basket with remaining balance
         return Response.status(Status.NOT_IMPLEMENTED).build();
     }
+
+
 
 }
