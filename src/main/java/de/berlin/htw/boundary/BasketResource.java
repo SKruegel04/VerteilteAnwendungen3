@@ -64,7 +64,7 @@ public class BasketResource {
     	logger.info(context.getUserPrincipal().getName() 
     			+ " is calling " + uri.getAbsolutePath());
     	
-        return basket.todo();
+        return basket.getBasket(context.getUserPrincipal());
     }
 
     @DELETE
@@ -73,8 +73,8 @@ public class BasketResource {
     @APIResponse(responseCode = "401", description = "No or wrong User Id provided as header")
     public void clearBasket() {
     	logger.info(context.getUserPrincipal().getName() 
-    			+ " is calling " + uri.getAbsolutePath());
-    	// no content
+            + " is calling " + uri.getAbsolutePath());
+    	basket.clearBasket(context.getUserPrincipal());
     }
 
     @POST
@@ -89,9 +89,11 @@ public class BasketResource {
     	logger.info(context.getUserPrincipal().getName() 
     			+ " is calling " + uri.getAbsolutePath());
     	// return the url of orders and the created order itself
+        Order order = basket.checkout(context.getUserPrincipal());
         return Response
-        		.created(uri.getBaseUriBuilder().path("hierFehltNoEtwas").build())
-        		.build();
+            .created(uri.getBaseUriBuilder().path("/orders").build())
+            .entity(order)
+            .build();
     }
 
     @POST
@@ -121,9 +123,10 @@ public class BasketResource {
                 .build();
         }
 
+        Basket newBasket = basket.addItem(context.getUserPrincipal(), productId, item);
         return Response
             .created(uri.getBaseUriBuilder().path("/basket").build())
-            .entity("Item hinzugefügt")
+            .entity(newBasket)
             .build();
     }
 
@@ -135,12 +138,11 @@ public class BasketResource {
         content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = Basket.class)) )
     @APIResponse(responseCode = "401", description = "No or wrong User Id provided as header")
     @APIResponse(responseCode = "404", description = "No product with this ID in the basket")
-    public Response removeItem(
+    public Basket removeItem(
             @Parameter(description = "ID of the product", required = true) @PathParam("productId") final String productId) {
     	logger.info(context.getUserPrincipal().getName() 
     			+ " is calling " + uri.getAbsolutePath());
-    	// return basket with remaining balance
-        return Response.status(Status.NOT_IMPLEMENTED).build();
+        return basket.removeItem(context.getUserPrincipal(), productId);
     }
 
     @PATCH
@@ -153,15 +155,12 @@ public class BasketResource {
     @APIResponse(responseCode = "400", description = "Invalid request message")
     @APIResponse(responseCode = "401", description = "No or wrong User Id provided as header")
     @APIResponse(responseCode = "404", description = "No product with this ID in the basket")
-    public Response changeCount(
+    public Basket changeCount(
             @Parameter(description = "ID of the product", required = true) @PathParam("productId") final String productId,
             @Parameter(description = "The number of that product in the basket", required = true) final Item item) {
     	logger.info(context.getUserPrincipal().getName() 
     			+ " is calling " + uri.getAbsolutePath());
     	// return basket with remaining balance
-        return Response.status(Status.NOT_IMPLEMENTED).build();
+        return basket.changeItemCount(context.getUserPrincipal(), productId, item);
     }
-
-
-
 }
