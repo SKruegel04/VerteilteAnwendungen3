@@ -7,7 +7,6 @@ import de.berlin.htw.boundary.dto.Order;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.Dependent;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.NotSupportedException;
 
 import de.berlin.htw.boundary.dto.Basket;
 import io.quarkus.redis.datasource.RedisDataSource;
@@ -41,22 +40,7 @@ public class BasketController {
 
     public Basket getBasket(Principal userPrincipal) {
         String key = getPrincipalBasketKey(userPrincipal);
-        List<String> jsonItems = stringListCommands.lrange(key, 0, -1);
-        List<Item> items = new ArrayList<>();
-
-        for (String jsonItem : jsonItems) {
-            Item item = null;
-            try {
-                item = objectMapper.readValue(jsonItem, Item.class);
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
-            items.add(item);
-        }
-
-        var basket = new Basket();
-        basket.setItems(items);
-        return basket;
+        return loadBasket(key);
     }
 
     public Order checkout(Principal userPrincipal) {
@@ -83,86 +67,102 @@ public class BasketController {
 
     public Basket addItem(Principal userPrincipal, String productId, Item item) {
         String key = getPrincipalBasketKey(userPrincipal);
-        // Serialize item to JSON
-        String jsonItem = null;
-        try {
-            jsonItem = objectMapper.writeValueAsString(item);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+        Basket basket = getBasket(userPrincipal);
+
+        for (Item itemInBasket : basket.getItems()) {
+            if (productId.equals(itemInBasket.getProductId())) {
+                // Update the item count
+                itemInBasket.setCount(itemInBasket.getCount() + item.getCount());
+                // Save the updated basket
+                saveBasket(key, basket);
+                // Return the updated basket
+                return basket;
+            }
         }
-        // Push to the list
-        stringListCommands.rpush(key, jsonItem);
-        redisDS.key().expire(key, 120);
+
+        // Add the item to the basket
+        basket.getItems().add(item);
+        // Save the updated basket
+        saveBasket(key, basket);
         // Return updated basket
-        return getBasket(userPrincipal);
+        return basket;
     }
 
     public Basket removeItem(Principal userPrincipal, String productId) {
         String key = getPrincipalBasketKey(userPrincipal);
-        // Find the index of the item with the given product ID
-        // Note: This requires each item JSON to have the product ID as a property
-        List<String> items = stringListCommands.lrange(key, 0, -1);
-        int indexToRemove = -1;
-        for (int i = 0; i < items.size(); i++) {
-            Item item = null;
-            try {
-                item = objectMapper.readValue(items.get(i), Item.class);
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
+        Basket basket = getBasket(userPrincipal);
+
+        List<Item> items = basket.getItems();
+        for (Item item : items) {
             if (productId.equals(item.getProductId())) {
-                indexToRemove = i;
+                items.remove(item);
                 break;
             }
         }
-        if (indexToRemove != -1) {
-            // Remove the item at the found index
-            String itemToRemove = items.get(indexToRemove);
-            stringListCommands.lrem(key, 1, itemToRemove);
-        }
-        redisDS.key().expire(key, 120);
-        // Return updated basket
-        return getBasket(userPrincipal);
+
+        saveBasket(key, basket);
+        return basket;
     }
 
 
-    public Basket changeItemCount(Principal userPrincipal, String productId, Item updatedItem) {
+    public Basket changeCount(Principal userPrincipal, String productId, Item updatedItem) {
         String key = getPrincipalBasketKey(userPrincipal);
-        // Serialize item to JSON
-        String jsonItem = null;
-        try {
-            jsonItem = objectMapper.writeValueAsString(updatedItem);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-        // Get all items
-        List<String> jsonItems = stringListCommands.lrange(key, 0, -1);
-        // Find the item to update
-        for (int i = 0; i < jsonItems.size(); i++) {
-            String jsonItemToCheck = jsonItems.get(i);
-            Item itemToCheck = null;
-            try {
-                itemToCheck = objectMapper.readValue(jsonItemToCheck, Item.class);
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
-            if (itemToCheck.getProductId().equals(productId)) {
-                // Update the item
-                jsonItems.set(i, jsonItem);
+        Basket basket = getBasket(userPrincipal);
+
+        List<Item> items = basket.getItems();
+        for (Item item : items) {
+            if (productId.equals(item.getProductId())) {
+                item.setCount(updatedItem.getCount());
                 break;
             }
         }
-        // Clear the basket
-        redisDS.key().del(key);
-        // Push all items back to the list
-        for (String jsonItemToPush : jsonItems) {
-            stringListCommands.rpush(key, jsonItemToPush);
-        }
-        redisDS.key().expire(key, 120);
-        return getBasket(userPrincipal);
+
+        saveBasket(key, basket);
+        return basket;
     }
 
     private String getPrincipalBasketKey(Principal userPrincipal) {
         return String.format("basket:%s", userPrincipal.getName());
+    }
+
+    private Basket loadBasket(String key) {
+        List<String> jsonItems = stringListCommands.lrange(key, 0, -1);
+        List<Item> items = new ArrayList<>();
+        for (String jsonItem : jsonItems) {
+            Item item = null;
+            try {
+                item = objectMapper.readValue(jsonItem, Item.class);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+            items.add(item);
+        }
+        var basket = new Basket();
+        basket.setItems(items);
+        return basket;
+    }
+
+    private void saveBasket(String key, Basket basket) {
+        // Clear
+        redisDS.key().del(key);
+
+        // Serialize items to JSON
+        List<String> jsonItems = new ArrayList<>();
+        for (Item item : basket.getItems()) {
+            String jsonItem = null;
+            try {
+                jsonItem = objectMapper.writeValueAsString(item);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+            jsonItems.add(jsonItem);
+        }
+
+        // Push to the list
+        for (String jsonItem : jsonItems) {
+            stringListCommands.rpush(key, jsonItem);
+        }
+
+        redisDS.key().expire(key, 120);
     }
 }

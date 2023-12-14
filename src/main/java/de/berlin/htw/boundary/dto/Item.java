@@ -11,7 +11,7 @@ import org.hibernate.validator.constraints.Range;
 public class Item {
 
 	@NotNull
-	@Length(max=255)
+	@Length(max = 255)
     private String productName;
 
 	@NotNull
@@ -21,7 +21,7 @@ public class Item {
     private Integer count;
 
 	@NotNull
-	@Range(min=10, max=100)
+	@Range(min = 10, max = 100)
     private Float price;
 
     public String getProductName() {

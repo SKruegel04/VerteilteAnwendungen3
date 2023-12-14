@@ -14,7 +14,6 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.core.SecurityContext;
 import jakarta.ws.rs.core.UriInfo;
 
@@ -161,6 +160,6 @@ public class BasketResource {
     	logger.info(context.getUserPrincipal().getName() 
     			+ " is calling " + uri.getAbsolutePath());
     	// return basket with remaining balance
-        return basket.changeItemCount(context.getUserPrincipal(), productId, item);
+        return basket.changeCount(context.getUserPrincipal(), productId, item);
     }
 }
