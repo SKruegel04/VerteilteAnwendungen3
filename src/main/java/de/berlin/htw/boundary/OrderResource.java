@@ -43,7 +43,7 @@ public class OrderResource {
     	logger.info(context.getUserPrincipal().getName() 
     			+ " is calling " + uri.getAbsolutePath());
 
-        return order.todo();
+        return order.getCompletedOrders(context.getUserPrincipal());
     }
 
 }

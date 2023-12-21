@@ -1,5 +1,6 @@
 package de.berlin.htw.boundary;
 
+import de.berlin.htw.entity.dto.UserEntity;
 import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
@@ -87,6 +88,16 @@ public class BasketResource {
     public Response checkout() {
     	logger.info(context.getUserPrincipal().getName() 
     			+ " is calling " + uri.getAbsolutePath());
+
+        Float basketTotal = basket.getBasketTotal(context.getUserPrincipal());
+        UserEntity user = (UserEntity) context.getUserPrincipal();
+        if (basketTotal > user.getBalance()) {
+            return Response
+                .status(Response.Status.BAD_REQUEST)
+                .entity("Not enough money on account")
+                .build();
+        }
+
     	// return the url of orders and the created order itself
         Order order = basket.checkout(context.getUserPrincipal());
         return Response

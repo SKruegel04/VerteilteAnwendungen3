@@ -1,3 +1,6 @@
+Vorbereitung:
+- DB Browser und Redis Helper in IntelliJ installieren, ansonsten alternative Tools nutzen
+
 # Aufgabe 1
 
 - `docker-compose.yml` Datei im Root erstellt
@@ -89,3 +92,50 @@ Zur Validierung wurden Validation-Annotations aus dem `jakarta.validation.constr
   - Der Key inkooperiert den Username des Benutzers, z.B: "basket:testnutzer". So wird verhindert, dass die Nutzer Baskets anderer Nutzer sehen können.
   - Der Key hat eine Ablauffrist von 2 Minuten
   - Wenn der Key abläuft, wird der Warenkorb automatisch gelöscht
+
+Applikation ausführen mit:
+
+```shell
+java -jar target/verteilte-anwendungen-redis-1.0.0-SNAPSHOT-runner.jar
+```
+
+Zur Präsentation:
+- In Postman ein Item zum Basket hinzufügen
+- In IntelliJ "Redis Helper" öffnen (Vorher installieren)
+  - Verbinden mit Host "localhost", Port "6379", Benutzername und Passwort leer
+- DB0 doppelklicken (dort wo eine andere Zahl als 0 hintersteht)
+- JSON-Array (Basket) in Redis zeigen
+
+# Aufgabe 4
+
+- Neues Changeset in liquibase-changelog.xml hinzugefügt
+- Neue Tabelle `ORDER` mit den Spalten `ID`, `ITEMS`, `TOTAL`, `CREATED_AT`, `MODIFIED_AT` hinzugefügt
+- Neue Tabelle `ITEM` mit den Spalten `ID`, `ORDER_ID`, `PRODUCT_NAME`, `PRODUCT_ID`, `COUNT`, `CREATED_AT`, `MODIFIED_AT` hinzugefügt
+- ORDER und ITEM sind in einer Many-to-One Relation (Eine Order - Viele Items)
+  - Dies wurde durch "<constraint foreignKeyName ..." ausgedrückt
+
+# Aufgabe 5
+
+- Entities "OrderEntity" und "ItemEntity" hinzugefügt
+- Entities sind in einer Many-to-One Relation (Eine Order - Viele Items)
+  - Dies wurde durch "@OneToMany" bzw. "@ManyToOne" ausgedrückt
+- UserController hinzugefügt, um die User Balance beim Checkout anzupassen
+- OrderController erweitert
+  - getCompletedOrders wirft alle Bestellungen zurück
+  - create erstellt eine neue Bestellung/speichert diese in der Datenbank
+  - Die Methoden darunter sind nur für das Mapping von DTO zu Entity und zurück zuständig
+- OrderResource erweitert
+  - getCompletedOrders gibt alle Bestellungen zurück
+- BasketController erweitert
+  - checkout ruft die create Methode des OrderControllers auf um die Order in der Datenbank zu speichern
+- 415er Status Codes in den Tests entfernt ("NOT_IMPLEMENTED")
+
+Für die Präsentation:
+- In Postman eine Bestellung aufgeben (Checkout)
+- DB Browser in IntelliJ öffnen (Vorher installieren)
+- Zur Datenbank verbinden (+ im DB Browser drücken, MySQL auswählen, Daten übergeben(siehe unten)) falls noch nicht geschehen
+  - Host: localhost, Port: 3306, User: root, Password: geheim, Database: VA_APP
+- Zur Tabelle "ORDER" navigieren (In DB Browser "Connection" -> "Schemas" -> "VA_APP" -> "ORDER")
+  - Doppelklicken um die Daten zu sehen (GGF als Filter "ID > 0" einstellen!!)
+- Zur Tabelle "ITEM" navigieren (In DB Browser "Connection" -> "Schemas" -> "VA_APP" -> "ITEM")
+  - Doppelklicken um die Daten zu sehen (GGF als Filter "ID > 0" einstellen!!)

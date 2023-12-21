@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.berlin.htw.boundary.dto.Item;
 import de.berlin.htw.boundary.dto.Order;
+import de.berlin.htw.entity.dto.UserEntity;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.Dependent;
 import jakarta.inject.Inject;
@@ -12,6 +13,7 @@ import de.berlin.htw.boundary.dto.Basket;
 import io.quarkus.redis.datasource.RedisDataSource;
 import io.quarkus.redis.datasource.value.ValueCommands;
 import io.quarkus.redis.datasource.list.ListCommands;
+import jakarta.transaction.Transactional;
 
 import java.security.Principal;
 import java.util.ArrayList;
@@ -32,6 +34,12 @@ public class BasketController {
     @Inject
     ObjectMapper objectMapper;
 
+    @Inject
+    OrderController orderController;
+
+    @Inject
+    UserController userController;
+
     @PostConstruct
     protected void init() {
         countCommands = redisDS.value(Integer.class);
@@ -43,19 +51,30 @@ public class BasketController {
         return loadBasket(key);
     }
 
+    public Float getBasketTotal(Principal userPrincipal) {
+        String key = getPrincipalBasketKey(userPrincipal);
+        Basket basket = loadBasket(key);
+        return basket.getItems().stream()
+            .map(item -> item.getPrice() * item.getCount())
+            .reduce(0.0f, Float::sum);
+    }
+
+    @Transactional
     public Order checkout(Principal userPrincipal) {
         String key = getPrincipalBasketKey(userPrincipal);
         Basket basket = getBasket(userPrincipal);
-        // Logic to checkout the basket, typically involving:
-        // - Retrieving all items
-        // - Processing payment
-        // - Creating an order
-        // - Clearing the basket in Redis
-        // ...
-        redisDS.key().del(key); // Clear the basket after checkout
-        // Construct the order object and location URI
-        Order order = new Order(); // Populate order details
+        redisDS.key().del(key);
+
+        Order order = new Order();
         order.setItems(basket.getItems());
+        order.setTotal(
+            basket.getItems().stream()
+                .map(item -> item.getPrice() * item.getCount())
+                .reduce(0.0f, Float::sum)
+        );
+        UserEntity user = (UserEntity) userPrincipal;
+        userController.updateBalance(userPrincipal, user.getBalance() - order.getTotal());
+        orderController.create(order);
         return order; // Return the order object
     }
 
