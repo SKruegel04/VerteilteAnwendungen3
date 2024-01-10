@@ -8,7 +8,7 @@ import jakarta.persistence.*;
  * @author Simone Krügel [simone.kruegel@student.htw-berlin.de]
  */
 @Entity
-@Table(name = "`ORDER`")
+@Table(name = "ORDERS")
 public class OrderEntity extends AbstractEntity {
 
     @Id

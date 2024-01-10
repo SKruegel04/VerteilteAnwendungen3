@@ -80,7 +80,7 @@
                 <constraints
                     nullable="false"
                     foreignKeyName="FK_ORDER_ID"
-                    referencedTableName="ORDER"
+                    referencedTableName="ORDERS"
                     referencedColumnNames="ID"
                 />
             </column>
