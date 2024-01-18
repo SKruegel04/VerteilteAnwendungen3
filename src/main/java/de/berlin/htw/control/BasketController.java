@@ -27,7 +27,7 @@ public class BasketController {
 
     @Inject
     protected RedisDataSource redisDS;
-    
+
     protected ValueCommands<String, Integer> countCommands;
     protected ListCommands<String, String> stringListCommands;
 
@@ -55,8 +55,8 @@ public class BasketController {
         String key = getPrincipalBasketKey(userPrincipal);
         Basket basket = loadBasket(key);
         return basket.getItems().stream()
-            .map(item -> item.getPrice() * item.getCount())
-            .reduce(0.0f, Float::sum);
+                .map(item -> item.getPrice() * item.getCount())
+                .reduce(0.0f, Float::sum);
     }
 
     @Transactional
@@ -68,9 +68,9 @@ public class BasketController {
         Order order = new Order();
         order.setItems(basket.getItems());
         order.setTotal(
-            basket.getItems().stream()
-                .map(item -> item.getPrice() * item.getCount())
-                .reduce(0.0f, Float::sum)
+                basket.getItems().stream()
+                        .map(item -> item.getPrice() * item.getCount())
+                        .reduce(0.0f, Float::sum)
         );
         UserEntity user = (UserEntity) userPrincipal;
         userController.updateBalance(userPrincipal, user.getBalance() - order.getTotal());
@@ -88,22 +88,20 @@ public class BasketController {
         String key = getPrincipalBasketKey(userPrincipal);
         Basket basket = getBasket(userPrincipal);
 
+        boolean itemExists = false;
+
         for (Item itemInBasket : basket.getItems()) {
             if (productId.equals(itemInBasket.getProductId())) {
-                // Update the item count
                 itemInBasket.setCount(itemInBasket.getCount() + item.getCount());
-                // Save the updated basket
-                saveBasket(key, basket);
-                // Return the updated basket
-                return basket;
+                itemExists = true;
+                break;
             }
         }
 
-        // Add the item to the basket
-        basket.getItems().add(item);
-        // Save the updated basket
+        if (!itemExists) {
+            basket.getItems().add(item);
+        }
         saveBasket(key, basket);
-        // Return updated basket
         return basket;
     }
 
@@ -122,7 +120,6 @@ public class BasketController {
         saveBasket(key, basket);
         return basket;
     }
-
 
     public Basket changeCount(Principal userPrincipal, String productId, Item updatedItem) {
         String key = getPrincipalBasketKey(userPrincipal);
@@ -161,7 +158,7 @@ public class BasketController {
         return basket;
     }
 
-    private void saveBasket(String key, Basket basket) {
+    public void saveBasket(String key, Basket basket) {
         // Clear
         redisDS.key().del(key);
 
@@ -184,4 +181,7 @@ public class BasketController {
 
         redisDS.key().expire(key, 120);
     }
+
+
 }
+

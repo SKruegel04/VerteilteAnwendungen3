@@ -28,7 +28,6 @@ Vorbereitung:
       - "6379:6379"
   ```
 - Beides gestartet
-
   ```bash
   docker compose up -d
   ```

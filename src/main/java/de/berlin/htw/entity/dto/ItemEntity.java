@@ -66,7 +66,7 @@ public class ItemEntity extends AbstractEntity {
     }
 
     public void setCount(Integer count) {
-        this.count = count;
+        this.count = (count == null) ? 0 : count;
     }
 
     public Float getPrice() {

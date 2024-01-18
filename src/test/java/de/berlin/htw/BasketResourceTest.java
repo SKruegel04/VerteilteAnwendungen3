@@ -1,11 +1,13 @@
 package de.berlin.htw;
 
+import de.berlin.htw.boundary.dto.Basket;
 import de.berlin.htw.boundary.dto.Item;
 import io.quarkus.redis.datasource.RedisDataSource;
 import io.quarkus.redis.datasource.value.ValueCommands;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 
+import jakarta.enterprise.inject.build.compatible.spi.SkipIfPortableExtensionPresent;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
@@ -47,6 +49,57 @@ class BasketResourceTest {
                 .log().all()
                 .statusCode(201);
     }
+
+    //repeatedly add same item to see if count increase
+
+    /*@Test
+    void testAddItemTwice() {
+        final Item item = new Item();
+        item.setProductName("Test Name");
+        item.setProductId("1-2-3-4-5-6");
+        item.setPrice(14.0f);
+        item.setCount(1);
+
+        given()
+                .log().all()
+                .when().header("X-User-Id", "3")
+                .contentType(ContentType.JSON)
+                .body(item)
+                .post("/basket/anyID")
+                .then()
+                .log().all()
+                .statusCode(201);
+
+        given()
+                .log().all()
+                .when().header("X-User-Id", "3")
+                .contentType(ContentType.JSON)
+                .body(item)
+                .post("/basket/anyID")
+                .then()
+                .log().all()
+                .statusCode(201);
+
+        // Get the basket and check if count is 2
+        Basket basket = given()
+                .log().all()
+                .when().header("X-User-Id", "3")
+                .get("/basket/anyID")
+                .then()
+                .log().all()
+                .statusCode(200)
+                .extract().as(Basket.class);
+
+        int count = basket.getItems().stream()
+                .filter(basketItem -> basketItem.getProductId().equals(item.getProductId()))
+                .mapToInt(Item::getCount)
+                .sum();
+
+        assertEquals(2, count);
+    }
+    */
+
+
 
     @Test
     void testCheckout() {

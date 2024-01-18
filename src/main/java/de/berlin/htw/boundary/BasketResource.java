@@ -118,8 +118,10 @@ public class BasketResource {
     @APIResponse(responseCode = "409", description = "Another product with this ID already exist in the basket")
     public Response addItem(
             @Parameter(description = "ID of the product", required = true) @PathParam("productId") final String productId,
-            @Parameter(description = "The item to add in the basket", required = true) final Item item) {
-    	logger.info(context.getUserPrincipal().getName() 
+            @Parameter(description = "The item to add in the basket", required = true) final Item item) { //product id mit item entsprechen
+
+        //h
+    	logger.info(context.getUserPrincipal().getName()
     			+ " is calling " + uri.getAbsolutePath());
 
         Set<ConstraintViolation<Item>> violations = validator.validate(item);
@@ -132,6 +134,16 @@ public class BasketResource {
                     .collect(Collectors.toList()))
                 .build();
         }
+
+        if((productId.equals(item.getProductId())) == false) {
+        	return Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity("Product ID in path and body do not match")
+                    .build();
+        }
+
+
+        item.setProductId(productId);
 
         Basket newBasket = basket.addItem(context.getUserPrincipal(), productId, item);
         return Response
